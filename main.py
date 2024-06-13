@@ -31,7 +31,7 @@ def extract(url,table_attr):
             mc_usd = float(mc_usd) if mc_usd else None
             df1 = pd.DataFrame({"Name": name, "MC_USD_Billion": mc_usd},index=[0])
             df = pd.concat([df,df1], ignore_index=True)
-
+    log_process("DATA    EXTRACTED!!")
     return df
 def transform(df):
     df2 = pd.read_csv("./exchange_rate.csv")
@@ -40,11 +40,15 @@ def transform(df):
     df["MC_GBP_Billion"] = [np.round(i*ex["GBP"],2) for i in x]
     df["MC_EUR_Billion"] = [np.round(i*ex["EUR"],2) for i in x]
     df["MC_INR_Billion"] = [np.round(i*ex["INR"],2) for i in x]
+    log_process("DATA_TRANSFORMED!")
     return df
 def load_to_csv(df,output_csv_path):
     df.to_csv(output_csv_path)
+    log_process("LOADED TO LOCAL CSV FILE PATH : {}!".format(output_csv_path))
 def load_to_db(df,sql_connection,table_name):
     df.to_sql(table_name,sql_connection,if_exists="replace",index=False)
+    log_process("LOADED TO DATABASE : {} TABLE : {}!".format("Banks",table_name))
 def run_query(query_statement,sql_connection):
+    log_process("EXECUTED AN SQL QUERY...")
     output = pd.read_sql(query_statement,sql_connection)
     print(output)
